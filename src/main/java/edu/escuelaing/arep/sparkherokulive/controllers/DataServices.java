@@ -12,11 +12,29 @@ import spark.Response;
 
 import static spark.Spark.*;
 
+/**
+ * Class that allows obtainig actions data given its identifier and using
+ * external services
+ */
 public class DataServices {
 
     private static final String USER_AGENT = "Mozilla/5.0";
     private static String GET_URL = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&%s&apikey=Q1QZFVJQ21K7C6XM";
 
+    public DataServices() {
+        try {
+            main(new String[] {});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Initialize resources and Spark framework
+     * 
+     * @param args
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
         staticFiles.location("/public");
         port(getPort());
@@ -24,6 +42,14 @@ public class DataServices {
         get("/fetchActionByIdentifier", "application/json", (req, res) -> fetchActionByIdentifier(req, res));
     }
 
+    /**
+     * Returns the data of an action given its identifier
+     * 
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception
+     */
     private static String fetchActionByIdentifier(Request request, Response response) throws Exception {
 
         String identifier = request.queryParams("identifier");
@@ -38,6 +64,13 @@ public class DataServices {
         return res;
     }
 
+    /**
+     * Use external services to fetch the data of an action given its identifier and
+     * return it
+     * 
+     * @param identifier
+     * @return
+     */
     private static String findDataByIdentifier(String identifier) {
         String res = "";
         try {
@@ -72,6 +105,9 @@ public class DataServices {
         return res;
     }
 
+    /**
+     * Returns default port
+     */
     static int getPort() {
         if (System.getenv("PORT") != null) {
             return Integer.parseInt(System.getenv("PORT"));
