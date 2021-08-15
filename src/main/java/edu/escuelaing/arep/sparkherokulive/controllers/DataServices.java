@@ -3,12 +3,10 @@ package edu.escuelaing.arep.sparkherokulive.controllers;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 import edu.escuelaing.arep.sparkherokulive.helpers.CacheServices;
-import edu.escuelaing.arep.sparkherokulive.helpers.JsonFormatter;
 import spark.Request;
 import spark.Response;
 
@@ -17,11 +15,9 @@ import static spark.Spark.*;
 public class DataServices {
 
     private static final String USER_AGENT = "Mozilla/5.0";
-    private static JsonFormatter jsonFormatter;
     private static String GET_URL = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&%s&apikey=Q1QZFVJQ21K7C6XM";
 
     public static void main(String[] args) throws IOException {
-        jsonFormatter = new JsonFormatter();
         staticFiles.location("/public");
         port(getPort());
         init();
@@ -38,7 +34,7 @@ public class DataServices {
             CacheServices.getInstance().saveNewData(identifier, res);
             System.out.println("Found by search");
         }
-        
+
         return res;
     }
 
