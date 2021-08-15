@@ -5,7 +5,8 @@ class App extends React.Component {
         this.state = {
             identifier: "",
             dates: [],
-            values: []
+            values: [],
+            loading: false
         }
 
         this.handleInput = this.handleInput.bind(this);
@@ -17,7 +18,7 @@ class App extends React.Component {
     }
 
     searchActions() {
-        console.log(this.state.identifier);
+        this.setState({ ...this.state, loading: true })
         fetch("/fetchActionByIdentifier?identifier=" + this.state.identifier, {
             method: "GET",
             headers: {
@@ -39,6 +40,7 @@ class App extends React.Component {
                 }
             })
             .catch(error => console.log(error))
+            .finally(() => this.setState({ ...this.state, loading: false }))
     }
 
     render() {
@@ -52,25 +54,30 @@ class App extends React.Component {
                     className="form-control mx-auto text-center mt-3"
                     style={{ width: "30%" }}
                 />
-                <button
-                    className="d-block mx-auto mt-3 btn btn-primary btn-block"
-                    style={{
-                        width: "30%"
-                    }}
-                    onClick={() => this.searchActions()}
-                >
-                    Buscar
-                </button>
+                {
+                    !this.state.loading ?
+                        <button
+                            className="d-block mx-auto mt-3 btn btn-primary btn-block"
+                            style={{
+                                width: "30%"
+                            }}
+                            onClick={() => this.searchActions()}
+                        >
+                            Buscar
+                        </button>
+                        :
+                        <div className="mx-auto bg-primary d-block spinner-border" role="status"></div>
+                }
                 <div className="mt-5 row mx-auto">
                     {
                         this.state.dates.map((item, i) => (
                             <div key={i} className="col-3 mx-auto">
                                 <h6 className="text-success tex-center">{item}</h6>
-                                    <p className="text-light tex-center">{"Open: " + this.state.values[i]["1. open"]}</p>
-                                    <p className="text-light tex-center">{"High: " + this.state.values[i]["2. high"]}</p>
-                                    <p className="text-light tex-center">{"Low: " + this.state.values[i]["3. low"]}</p>
-                                    <p className="text-light tex-center">{"Close: " + this.state.values[i]["4. close"]}</p>
-                                    <p className="text-light tex-center">{"Volume: " + this.state.values[i]["5. volume"]}</p>
+                                <p className="text-light tex-center">{"Open: " + this.state.values[i]["1. open"]}</p>
+                                <p className="text-light tex-center">{"High: " + this.state.values[i]["2. high"]}</p>
+                                <p className="text-light tex-center">{"Low: " + this.state.values[i]["3. low"]}</p>
+                                <p className="text-light tex-center">{"Close: " + this.state.values[i]["4. close"]}</p>
+                                <p className="text-light tex-center">{"Volume: " + this.state.values[i]["5. volume"]}</p>
                             </div>
                         ))
                     }

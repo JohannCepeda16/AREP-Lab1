@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import edu.escuelaing.arep.sparkherokulive.helpers.CacheServices;
 import edu.escuelaing.arep.sparkherokulive.helpers.JsonFormatter;
 import spark.Request;
 import spark.Response;
@@ -17,7 +18,7 @@ public class DataServices {
 
     private static final String USER_AGENT = "Mozilla/5.0";
     private static JsonFormatter jsonFormatter;
-    private static final String GET_URL = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=fb&apikey=Q1QZFVJQ21K7C6XM";
+    private static String GET_URL = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&%s&apikey=Q1QZFVJQ21K7C6XM";
 
     public static void main(String[] args) throws IOException {
         jsonFormatter = new JsonFormatter();
@@ -28,9 +29,24 @@ public class DataServices {
     }
 
     private static String fetchActionByIdentifier(Request request, Response response) throws Exception {
+
+        String identifier = request.queryParams("identifier");
+        System.out.println("Identifier: " + identifier);
+        String res = CacheServices.getInstance().getDataByIndentifier(identifier);
+        if (res == null) {
+            res = findDataByIdentifier(identifier);
+            CacheServices.getInstance().saveNewData(identifier, res);
+            System.out.println("Found by search");
+        }
+        
+        return res;
+    }
+
+    private static String findDataByIdentifier(String identifier) {
         String res = "";
         try {
-            URL obj = new URL(GET_URL);
+            String finalURL = String.format(GET_URL, "symbol=" + identifier.toLowerCase());
+            URL obj = new URL(finalURL);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
             con.setRequestMethod("GET");
             con.setRequestProperty("User-Agent", USER_AGENT);
@@ -54,6 +70,7 @@ public class DataServices {
             }
             System.out.println("GET DONE");
         } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return res;
