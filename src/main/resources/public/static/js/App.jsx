@@ -19,7 +19,7 @@ class App extends React.Component {
 
     searchActions() {
         this.setState({ ...this.state, loading: true })
-        fetch("https://sparkherokuapp.herokuapp.com/fetchActionByIdentifier?identifier=" + this.state.identifier, {
+        fetch("/fetchActionByIdentifier?identifier=" + this.state.identifier, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
